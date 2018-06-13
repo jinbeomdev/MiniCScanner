@@ -28,7 +28,6 @@ TODO :
 
 extern FILE *sourceFile;                       // miniC source program
 
-
 int superLetter(char ch);
 int superLetterOrDigit(char ch);
 int getNumber(char firstCharacter);
@@ -98,15 +97,37 @@ struct tokenType scanner()
 		else switch (ch) {  // special character
 		case '/':
 			ch = fgetc(sourceFile);
-			if (ch == '*')			// text comment
-				do {
-					while (ch != '*') ch = fgetc(sourceFile);
+			if (ch == '*') {			// text comment
+				bool is_doc_comment = false;
+				char doc_buffer[DOC_BUFFER_SIZE];
+				int doc_buffer_pos = 0;
+				ch = fgetc(sourceFile);
+				if (ch == '*') {
+					is_doc_comment = true;
+				} else {
+					ungetc(ch, sourceFile);
+				}
+				while(true) {
+					while (ch != '*') {
+						ch = fgetc(sourceFile);
+						if (ch != '*' && is_doc_comment) {
+							doc_buffer[doc_buffer_pos++] = ch;
+						}
+					}
 					ch = fgetc(sourceFile);
-				} while (ch != '/');
-			else if (ch == '/')		// line comment
+					if (ch == '/') {
+						doc_buffer[doc_buffer_pos] = '\0';
+						break;
+					}  else if (is_doc_comment) {
+						doc_buffer[doc_buffer_pos++] = ch;
+					}
+				}
+				if(is_doc_comment) printf("%s", doc_buffer);
+			} else if (ch == '/') {		// line comment
 				while (fgetc(sourceFile) != '\n');
-			else if (ch == '=')  token.number = tdivAssign;
-			else {
+			} else if (ch == '=') {
+				token.number = tdivAssign;
+			} else {
 				token.number = tdiv;
 				ungetc(ch, sourceFile); // retract
 			}

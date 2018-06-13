@@ -8,6 +8,7 @@
 
 #define NO_KEYWORD 7
 #define ID_LENGTH 12
+#define DOC_BUFFER_SIZE 256
 
 struct tokenType {
 	int number;
