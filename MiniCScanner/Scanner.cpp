@@ -3,6 +3,23 @@
 *                                   2003. 3. 10               *
 ***************************************************************/
 
+/*
+TODO :
+1. 문서화주석
+-문서화 주석의 경우에는 주석의 내용을 출력해야함.
+2. Double Literal
+- 고정소숫점, 부동소숫점
+- 요약형식: 0., .0, 단, .만 나오는 것은 인식하지 말 것
+3. string literal
+- C 언어의 이스케이프 시퀀스 포함
+- 참고: https://en.wikipedia.org/wiki/Escape_sequences_in_C
+-단 유니코드 이스케이프 시퀀스는 제외
+4. 키워드 추가
+- for, switch, case, goto, break, continue, double
+5. 구분자 추가
+- :
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
