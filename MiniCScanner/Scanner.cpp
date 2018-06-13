@@ -46,19 +46,25 @@ char *tokenName[] = {
 	/* 18         19         20        21         22         23        */
 	"==",       ">",       ">=",      "[",      "]",        "eof",
 	/* 24         25         26        27         28         29        */
+	"-:",
+	/* 30                                                              */
 	//   ...........    word symbols ................................. //
-	/* 30         31         32        33         34         35        */
+	/* 31         32         33        34         35         36        */
 	"const",    "else",     "if",      "int",     "return",  "void",
-	/* 36         37         38        39                              */
-	"while",    "{",        "||",       "}"
+	/* 37         38         39        40         41         42        */
+	"while",    "{",        "||",       "}",      "for",     "switch",
+	/* 43         44         45        46                    47        */
+	"case",     "goto",     "break",    "continue",          "double"
 };
 
 char *keyword[NO_KEYWORD] = {
-	"const",  "else",    "if",    "int",    "return",  "void",    "while"
+	"const",  "else",    "if",    "int",    "return",  "void",    "while",
+	"for",    "switch",  "case",  "goto",   "break",   "continue","double"
 };
 
 enum tsymbol tnum[NO_KEYWORD] = {
-	tconst,    telse,     tif,     tint,     treturn,   tvoid,     twhile
+	tconst,    telse,     tif,     tint,     treturn,   tvoid,     twhile,
+	tfor,      tswitch,   tcase,   tgoto,    tbreak,    tcontinue, tdouble
 };
 
 struct tokenType scanner()
@@ -179,6 +185,7 @@ struct tokenType scanner()
 			ch = fgetc(sourceFile);
 			if (ch == '-')  token.number = tdec;
 			else if (ch == '=') token.number = tsubAssign;
+			else if (ch == ':') token.number = tdelimeter;
 			else {
 				token.number = tminus;
 				ungetc(ch, sourceFile);  // retract
