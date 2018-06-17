@@ -3,23 +3,6 @@
 *                                   2003. 3. 10               *
 ***************************************************************/
 
-/*
-TODO :
-1. 문서화주석
--문서화 주석의 경우에는 주석의 내용을 출력해야함.
-2. Double Literal
-- 고정소숫점, 부동소숫점
-- 요약형식: 0., .0, 단, .만 나오는 것은 인식하지 말 것
-3. string literal
-- C 언어의 이스케이프 시퀀스 포함
-- 참고: https://en.wikipedia.org/wiki/Escape_sequences_in_C
--단 유니코드 이스케이프 시퀀스는 제외
-4. 키워드 추가
-- for, switch, case, goto, break, continue, double
-5. 구분자 추가
-- :
-*/
-
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -54,7 +37,10 @@ char *tokenName[] = {
 	/* 37         38         39        40         41         42        */
 	"while",    "{",        "||",       "}",      "for",     "switch",
 	/* 43         44         45        46                    47        */
-	"case",     "goto",     "break",    "continue",          "double"
+	"case",     "goto",     "break",    "continue",          "double",
+	//   ...........    add          ................................. //
+	/* 48                                                              */
+	"\""
 };
 
 char *keyword[NO_KEYWORD] = {
@@ -97,6 +83,12 @@ struct tokenType scanner()
 			}
 		}  // end of identifier or keyword
 		else if (isdigit(ch)) {  // number
+		/*
+		TODO:
+		2. Double Literal
+			- 고정소숫점, 부동소숫점
+			- 요약형식 : 0., .0, 단, .만 나오는 것은 인식하지 말 것
+		*/
 			token.number = tnumber;
 			token.value.num = getNumber(ch);
 		}
@@ -105,7 +97,7 @@ struct tokenType scanner()
 			ch = fgetc(sourceFile);
 			if (ch == '*') {			// text comment
 				bool is_doc_comment = false;
-				char doc_buffer[DOC_BUFFER_SIZE];
+				char doc_buffer[BUFFER_SIZE];
 				int doc_buffer_pos = 0;
 				ch = fgetc(sourceFile);
 				if (ch == '*') {
@@ -223,6 +215,34 @@ struct tokenType scanner()
 				ungetc(ch, sourceFile);  // retract
 			}
 			break;
+		case '"': {
+			/*
+			TODO
+			3. string literal
+			- C 언어의 이스케이프 시퀀스 포함
+			- 참고: https://en.wikipedia.org/wiki/Escape_sequences_in_C
+			-단 유니코드 이스케이프 시퀀스는 제외
+			*/
+			token.number = tquote;
+			int str_buffer_pos = 0;
+			char str_buffer[BUFFER_SIZE];
+			while (true) {
+				ch = fgetc(sourceFile);
+				if (ch == '"') {
+					str_buffer[str_buffer_pos] = '\0';
+					break;
+				}
+				if (ch == '\\') {
+					str_buffer[str_buffer_pos++] = ch;
+					ch = fgetc(sourceFile);
+					str_buffer[str_buffer_pos++] = ch;
+					continue;
+				}
+				str_buffer[str_buffer_pos++] = ch;
+			}
+			strcpy_s(token.value.buffer, str_buffer);
+			break;
+		}
 		case '(': token.number = tlparen;         break;
 		case ')': token.number = trparen;         break;
 		case ',': token.number = tcomma;          break;
@@ -320,6 +340,9 @@ void printToken(struct tokenType token)
 		printf("number: %d, value: %s\n", token.number, token.value.id);
 	else if (token.number == tnumber)
 		printf("number: %d, value: %d\n", token.number, token.value.num);
+	else if (token.number == tquote) {
+		printf("number: %d, value: %s\n", token.number, token.value.buffer);
+	}
 	else
 		printf("number: %d(%s)\n", token.number, tokenName[token.number]);
 

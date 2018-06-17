@@ -8,13 +8,14 @@
 
 #define NO_KEYWORD 14
 #define ID_LENGTH 12
-#define DOC_BUFFER_SIZE 256
+#define BUFFER_SIZE 256
 
 struct tokenType {
 	int number;
 	union {
 		char id[ID_LENGTH];
 		int num;
+		char buffer[BUFFER_SIZE];
 	} value;
 };
 
@@ -36,8 +37,8 @@ enum tsymbol {
 	tconst, telse, tif, tint, treturn, tvoid,
 	/* 37   38       39   40       41    42       43     44     45     */
 	twhile, tlbrace, tor, trbrace, tfor, tswitch, tcase, tgoto, tbreak,
-	/* 46      47                                                      */
-	tcontinue, tdouble, 
+	/* 46      47       48                                             */
+	tcontinue, tdouble, tquote
 };
 
 struct tokenType scanner();
